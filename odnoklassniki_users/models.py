@@ -20,46 +20,6 @@ class UserManager(models.Manager):
 
 class UserRemoteManager(OdnoklassnikiManager):
 
-    fields = [
-        'uid',
-        'first_name',
-        'last_name',
-        'name',
-        'gender',
-        'birthday', #(yyyy-MM-dd)
-        'age',
-        'locale', #(en, lv, ... [language[_territory][.codeset][@modifier]] )
-        'location',
-        'current_status', # (текст статуса)
-        'current_status_id', # (уникальный идентификатор статуса)
-        'current_status_date', # (дата создания статуса)
-        'online',
-        'last_online',
-        'photo_id', # - id главной фотографии
-#         'pic_1', # - то же что и pic50x50
-#         'pic_2', # - то же что и pic128max
-#         'pic_3', # - то же что и pic190x190
-#         'pic_4', # - то же что и pic640x480
-#         'pic_5', # - то же что и pic128x128
-        'pic50x50', # - квадратная аватарка 50x50
-        'pic128x128', # - квадратная аватарка 128x128
-        'pic128max', # - аватарка, вписанная в квадрат 128x128
-        'pic180min', # - аватарка, заресайзенная по минимальной стороне 180
-        'pic240min', # - аватарка, заресайзенная по минимальной стороне 240
-        'pic320min', # - аватарка, заресайзенная по минимальной стороне 320
-        'pic190x190', # - квадратная аватарка 190x190
-        'pic640x480', # - аватарка, вписанная в квадрат 640x480
-        'pic1024x768', # - аватарка, вписанная в квадрат 1024x768
-        'url_profile',
-        'url_profile_mobile',
-        'url_chat',
-        'url_chat_mobile',
-        'has_email',
-        'allows_anonym_access',
-        'registered_date',
-        'private',
-        'has_service_invisible',
-    ]
     fetch_users_limit = 100
 
     @atomic
@@ -67,8 +27,7 @@ class UserRemoteManager(OdnoklassnikiManager):
     @fetch_by_chunks_of(fetch_users_limit)
     def fetch(self, ids, empty_pictures=True, **kwargs):
         kwargs['uids'] = ','.join(map(lambda i: str(i), ids))
-        if 'fields' not in kwargs:
-            kwargs['fields'] = ','.join(self.fields)
+        kwargs['fields'] = self.get_request_fields('user')
         # Если true, не возвращает изображения Odnoklassniki по умолчанию, когда фотография пользователя недоступна
         kwargs['emptyPictures'] = empty_pictures
 
@@ -114,7 +73,7 @@ class User(OdnoklassnikiPKModel):
     private = models.NullBooleanField()
 
     last_online = models.DateTimeField(null=True)
-    registered_date = models.DateTimeField()
+    registered_date = models.DateTimeField(null=True)
 
     photo_fields = ['pic1024x768', 'pic128max', 'pic128x128', 'pic180min', 'pic190x190', 'pic240min', 'pic320min', 'pic50x50', 'pic640x480']
     pic1024x768 = models.URLField()
