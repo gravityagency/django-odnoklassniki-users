@@ -44,7 +44,7 @@ class User(OdnoklassnikiPKModel):
         verbose_name = _('Odnoklassniki user')
         verbose_name_plural = _('Odnoklassniki users')
 
-#    resolve_screen_name_type = 'user'
+    resolve_screen_name_type = 'PROFILE'
     methods_namespace = 'users'
     remote_pk_field = 'uid'
     slug_prefix = 'profile'

@@ -10,6 +10,7 @@ USER1_ID = 561348705024
 USER1_NAME = u'Евгений Дуров'
 
 USER2_ID = 578592731938
+USER_SLUG_ID = 31073078859
 
 def user_fetch_mock(**kwargs):
     ids = kwargs.get('uids').split(',')
@@ -18,6 +19,24 @@ def user_fetch_mock(**kwargs):
     return User.objects.filter(pk__in=ids)
 
 class OdnoklassnikiUsersTest(TestCase):
+
+    def test_get_by_url(self):
+
+        user = UserFactory(id=USER_SLUG_ID)
+
+        self.assertEqual(User.objects.count(), 1)
+
+        urls = (
+            'http://ok.ru/ivanov/',
+            'http://ok.ru/ivanov',
+            'http://odnoklassniki.ru/ivanov',
+            'http://www.odnoklassniki.ru/ivanov',
+            'http://www.odnoklassniki.ru/profile/31073078859',
+        )
+
+        for url in urls:
+            instance = User.remote.get_by_url(url)
+            self.assertEqual(instance.id, USER_SLUG_ID)
 
     def test_refresh_user(self):
 
