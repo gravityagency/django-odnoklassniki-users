@@ -120,3 +120,6 @@ class User(OdnoklassnikiPKModel):
 
     def __unicode__(self):
         return self.name
+
+    def get_gender(self):
+        return dict(USER_SEX_CHOICES).get(self.gender)
