@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.db import models
-from django.utils.translation import ugettext as _
-from django.conf import settings
-from odnoklassniki_api.utils import api_call
-from odnoklassniki_api.decorators import fetch_all, fetch_only_expired, fetch_by_chunks_of, atomic
-from odnoklassniki_api.models import OdnoklassnikiManager, OdnoklassnikiPKModel
 from datetime import timedelta, datetime
 import logging
+
+from django.conf import settings
+from django.db import models
+from django.utils.translation import ugettext as _
+from odnoklassniki_api.decorators import fetch_all, fetch_only_expired, fetch_by_chunks_of, atomic
+from odnoklassniki_api.models import OdnoklassnikiManager, OdnoklassnikiPKModel
 
 log = logging.getLogger('odnoklassniki_users')
 
@@ -35,6 +35,7 @@ class UserRemoteManager(OdnoklassnikiManager):
 
 
 class User(OdnoklassnikiPKModel):
+
     '''
     Model of vkontakte user
     TODO: implement relatives, schools and universities connections
@@ -75,7 +76,8 @@ class User(OdnoklassnikiPKModel):
     last_online = models.DateTimeField(null=True)
     registered_date = models.DateTimeField(null=True)
 
-    photo_fields = ['pic1024x768', 'pic128max', 'pic128x128', 'pic180min', 'pic190x190', 'pic240min', 'pic320min', 'pic50x50', 'pic640x480']
+    photo_fields = ['pic1024x768', 'pic128max', 'pic128x128', 'pic180min',
+                    'pic190x190', 'pic240min', 'pic320min', 'pic50x50', 'pic640x480']
     pic1024x768 = models.URLField()
     pic128max = models.URLField()
     pic128x128 = models.URLField()
