@@ -17,7 +17,7 @@ USER_SLUG_ID = 31073078859
 
 
 def user_fetch_mock(**kwargs):
-    ids = kwargs.get('uids').split(',')
+    ids = kwargs.get('ids')
     users = [User.objects.get(id=id) if User.objects.filter(id=id).count() == 1 else UserFactory(id=id) for id in ids]
     ids = [user.pk for user in users]
     return User.objects.filter(pk__in=ids)
@@ -70,7 +70,7 @@ class OdnoklassnikiUsersTest(TestCase):
         self.assertEqual(instance.name, USER1_NAME)
         self.assertTrue(isinstance(instance.registered_date, datetime))
 
-    @mock.patch('odnoklassniki_api.models.OdnoklassnikiManager.fetch', side_effect=user_fetch_mock)
+    @mock.patch('odnoklassniki_users.models.UserRemoteManager.fetch', side_effect=user_fetch_mock)
     def test_fetch_users_more_than_100(self, fetch):
 
         users = User.remote.fetch(ids=range(0, 150))
@@ -81,7 +81,7 @@ class OdnoklassnikiUsersTest(TestCase):
         self.assertEqual(len(fetch.mock_calls[0].call_list()[0][2]['uids'].split(',')), 100)
         self.assertEqual(len(fetch.mock_calls[1].call_list()[0][2]['uids'].split(',')), 50)
 
-    @mock.patch('odnoklassniki_api.models.OdnoklassnikiManager.fetch', side_effect=user_fetch_mock)
+    @mock.patch('odnoklassniki_users.models.UserRemoteManager.fetch', side_effect=user_fetch_mock)
     def test_fetching_expired_users(self, fetch):
 
         users = User.remote.fetch(ids=range(0, 50))
