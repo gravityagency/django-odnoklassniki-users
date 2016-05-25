@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta, datetime
+from datetime import date
 import logging
 
 from django.conf import settings
@@ -35,12 +35,11 @@ class UserRemoteManager(OdnoklassnikiManager):
 
 
 class User(OdnoklassnikiPKModel):
-
-    '''
+    """
     Model of vkontakte user
     TODO: implement relatives, schools and universities connections
     TODO: make field screen_name unique
-    '''
+    """
     class Meta:
         verbose_name = _('Odnoklassniki user')
         verbose_name_plural = _('Odnoklassniki users')
@@ -56,6 +55,7 @@ class User(OdnoklassnikiPKModel):
     shortname = models.CharField(max_length=100, db_index=True)
 
     gender = models.PositiveSmallIntegerField(null=True, choices=USER_SEX_CHOICES)
+    age = models.PositiveSmallIntegerField(null=True, db_index=True)
     birthday = models.CharField(max_length=100)
     city = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
@@ -123,5 +123,25 @@ class User(OdnoklassnikiPKModel):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.update()
+        return super(User, self).save(*args, **kwargs)
+
     def get_gender(self):
         return dict(USER_SEX_CHOICES).get(self.gender)
+
+    def update(self):
+        self.update_age()
+
+    def update_age(self):
+        parts = self.birthday.split('-')
+        if len(parts) == 3:
+            try:
+                parts = map(int, parts)
+                born = date(parts[2], parts[1], parts[0])
+            except ValueError:
+                return
+            # Using solution from here
+            # http://stackoverflow.com/questions/2217488/age-from-birthdate-in-python/9754466#9754466
+            today = date.today()
+            self.age = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
