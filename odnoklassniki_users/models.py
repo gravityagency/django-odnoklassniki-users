@@ -138,7 +138,7 @@ class User(OdnoklassnikiPKModel):
         if len(parts) == 3:
             try:
                 parts = map(int, parts)
-                born = date(parts[2], parts[1], parts[0])
+                born = date(parts[0], parts[1], parts[2])
             except ValueError:
                 return
             # Using solution from here
